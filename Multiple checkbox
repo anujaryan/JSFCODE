@@ -1,0 +1,44 @@
+   <p:panel id="ptable"   style="margin: 10px 0 15px 0;"  header="Already Invited Meeting Participant">
+      	
+
+						<h:panelGrid columns="7" width="100%">
+							<p:dataTable id="table" value="#{dynaForm.attendanceMI}"
+								var="member" style="width:99%;margin:0 0 0 1%;margin-top:10%;"
+								rowIndexVar="index" rowClasses="odd-row, even-row" rowKey="#{member.id}"  selection="#{dynaForm.attendanceMI}">
+
+								<p:column headerText="Sr.No.">
+									<h:outputText value="#{index+1}" />
+								</p:column>
+
+								<p:column headerText="Invitee Name">
+									<h:outputText value="#{member.name}" />
+								</p:column>
+
+								<p:column headerText="Address">
+									<h:outputText value="#{member.address}" />
+								</p:column>
+
+								<p:column headerText="Email">
+									<h:outputText value="#{member.email}" />
+								</p:column>
+
+								<p:column headerText="Mobile">
+									<h:outputText value="#{member.contactno}" />
+								</p:column>
+
+
+            	
+		  <p:column selectionMode="multiple" style="width:16px;text-align:center"  />
+							
+
+							
+							</p:dataTable>
+						</h:panelGrid>
+
+					
+      
+      
+      </p:panel>
+      
+      
+      	List<MeetingInvitie> attendanceMI = new ArrayList<>();
