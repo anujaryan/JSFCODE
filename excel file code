@@ -1,0 +1,199 @@
+package com.util;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+
+
+
+
+first download APACHE POI JAVA VERSION:POI_3.9.JAR
+
+
+public class ExcelImport {
+
+	
+	public static void main(String[] args) throws IOException {
+		
+		
+		
+		
+		
+		
+		List<KhasraDetails> list=new ArrayList<KhasraDetails>();
+		
+		
+		for(int i=0;i<5;i++){
+			KhasraDetails kh=new KhasraDetails();
+			
+			kh.setSeller_name("रमेश चन्द्र");
+			kh.setArea_land("2.5");
+			kh.setAnnuity_amount("2500");
+			kh.setKhasra_no("569");
+			kh.setPaid_amount("567000");
+			//kh.se
+			
+			list.add(kh);
+			
+		}
+		
+		
+		
+	//	HSSFWorkbook
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		//HSSFSheet
+		HSSFSheet sheet = workbook.createSheet("Java Books");
+		
+		
+		createHeaderRow(sheet);
+  
+ 
+        int rowCount = 0;
+        
+        for(KhasraDetails kh:list){
+        	  Row row = sheet.createRow(++rowCount);
+              
+              int columnCount = 0;
+              Cell cellsn = row.createCell(0);
+              cellsn.setCellValue(rowCount);
+             
+              Cell cell = row.createCell(++columnCount);
+              cell.setCellValue(kh.getSeller_name());
+              
+              cell = row.createCell(2);
+              cell.setCellValue(kh.getArea_land());
+           
+              cell = row.createCell(3);
+              cell.setCellValue(kh.getPaid_amount());
+              
+              cell = row.createCell(4);
+              cell.setCellValue(kh.getAnnuity_amount());
+              
+              cell = row.createCell(5);
+              cell.setCellValue(kh.getKhasra_no());
+              
+        }
+        
+         
+      /*  for (Object[] aBook : bookData) {
+            Row row = sheet.createRow(++rowCount);
+             
+            int columnCount = 0;
+            Cell cellsn = row.createCell(0);
+            cellsn.setCellValue(rowCount);
+            for (Object field : aBook) {
+                Cell cell = row.createCell(++columnCount);
+                if (field instanceof String) {
+                    cell.setCellValue((String) field);
+                } else if (field instanceof Integer) {
+                    cell.setCellValue((Integer) field);
+                }
+            }
+             
+        }*/
+         
+         
+        try (FileOutputStream outputStream = new FileOutputStream("C:\\Users\\anuj.pachauri\\Downloads\\JasperReport\\New folder\\JavaBooks.xls")) {
+            workbook.write(outputStream);
+        }
+        
+        
+   
+    }
+ 
+	public static void createHeaderRow(Sheet sheet) {
+		 
+	    CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+	    Font font = sheet.getWorkbook().createFont();
+	   // font.setBold(true);
+	    font.setFontHeightInPoints((short) 10);
+	    cellStyle.setFont(font);
+	 
+	    Row row = sheet.createRow(0);
+	    Cell cellSno = row.createCell(0);
+		 
+	    cellSno.setCellStyle(cellStyle);
+	    cellSno.setCellValue("S.No");
+	    Cell cellTitle = row.createCell(1);
+	 
+	    cellTitle.setCellStyle(cellStyle);
+	    cellTitle.setCellValue("Seller Name");
+	 
+	    Cell cellAuthor = row.createCell(2);
+	    cellAuthor.setCellStyle(cellStyle);
+	    cellAuthor.setCellValue("Area Of Land");
+	 
+	    Cell cellPrice = row.createCell(3);
+	    cellPrice.setCellStyle(cellStyle);
+	    cellPrice.setCellValue("Paid Amount");
+	    
+	    
+	    Cell cellannuity = row.createCell(4);
+	    cellannuity.setCellStyle(cellStyle);
+	    cellannuity.setCellValue("Annuity Amount");
+	    
+	    Cell cellKhasra = row.createCell(5);
+	    cellKhasra.setCellStyle(cellStyle);
+	    cellKhasra.setCellValue("Khasra Number");
+	}
+	
+	
+}
+
+
+
+
+
+
+
+package com.util;
+
+public class KhasraDetails {
+	
+	private String seller_name;
+	private  String area_land;
+    private String paid_amount;
+    private String khasra_no;
+    private String annuity_amount;
+	public String getSeller_name() {
+		return seller_name;
+	}
+	public String getArea_land() {
+		return area_land;
+	}
+	public String getPaid_amount() {
+		return paid_amount;
+	}
+	public String getKhasra_no() {
+		return khasra_no;
+	}
+	public String getAnnuity_amount() {
+		return annuity_amount;
+	}
+	public void setSeller_name(String seller_name) {
+		this.seller_name = seller_name;
+	}
+	public void setArea_land(String area_land) {
+		this.area_land = area_land;
+	}
+	public void setPaid_amount(String paid_amount) {
+		this.paid_amount = paid_amount;
+	}
+	public void setKhasra_no(String khasra_no) {
+		this.khasra_no = khasra_no;
+	}
+	public void setAnnuity_amount(String annuity_amount) {
+		this.annuity_amount = annuity_amount;
+	}
+	
+
+}
