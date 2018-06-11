@@ -1,0 +1,4 @@
+1.Run sQL qUERY
+String sql = "update MD_PROP_ASSESMENT set IS_DELETED = 1 where APP_NUM = '" + appNumber + "'";
+					query = hbSession.createSQLQuery(sql);
+					query.executeUpdate();
