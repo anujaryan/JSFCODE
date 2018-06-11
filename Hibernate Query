@@ -2,3 +2,8 @@
 String sql = "update MD_PROP_ASSESMENT set IS_DELETED = 1 where APP_NUM = '" + appNumber + "'";
 					query = hbSession.createSQLQuery(sql);
 					query.executeUpdate();
+
+2.hIBERANTE qUERY
+Query query = null;
+			query = getSession().createQuery("from Department dep WHERE dep.isActive=1");
+			List<Department> tempList = query.list();
