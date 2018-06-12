@@ -7,3 +7,9 @@ String sql = "update MD_PROP_ASSESMENT set IS_DELETED = 1 where APP_NUM = '" + a
 Query query = null;
 			query = getSession().createQuery("from Department dep WHERE dep.isActive=1");
 			List<Department> tempList = query.list();
+
+3.Fetch List with Criteria wise
+
+getDynamicFormService().getList(AppWiseKhasraAddDetails.class,
+							new Criterion[] { Restrictions.eq("app_no", this.transactionDetail.getAppNo()) },
+							new Order[] { Order.asc("id") });
