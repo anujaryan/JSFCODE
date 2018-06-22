@@ -13,3 +13,13 @@ Query query = null;
 getDynamicFormService().getList(AppWiseKhasraAddDetails.class,
 							new Criterion[] { Restrictions.eq("app_no", this.transactionDetail.getAppNo()) },
 							new Order[] { Order.asc("id") });
+							
+							
+4.aadharpankhasra = (KhasraMasterRecord) getDynamicFormService().getUniqueResult(KhasraMasterRecord.class,
+					new Criterion[] { Restrictions.eq("id", member.getId()),
+							Restrictions.eq("owner_id", member.getOwner_id()) });
+							
+
+5	<property name="departmentName">	
+            <formula>(SELECT md.DEPARTMENT_NAME FROM MD_DEPARTMENTS md where md.id = DEPARTMENT_ID)</formula>	
+        </property>
