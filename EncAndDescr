@@ -1,0 +1,161 @@
+package com.aes.decrypt;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.log4j.Logger;
+import org.apache.ws.commons.util.Base64.DecodingException;
+
+// TODO: Implement 256-bit version like: http://securejava.wordpress.com/2012/10/25/aes-256/
+public class AesUtil {
+    private final int keySize;
+    private final int iterationCount;
+    private final Cipher cipher;
+    final static Logger logger = Logger.getLogger(AesUtil.class);
+    public static void main(String[] args) {
+    	 String passphrase = "password12345678";
+         int iterationCount = 1000;
+         int keySize = 128;
+         String salt = "2ecb098f10a9a630bcf62a8e03e58cb0";
+         String ciphertext = "bCd4P695m18ZlxakeTMrJw==";//amit
+         String iv = "144627479e44c3d5c69babb3ccca7aba";
+        /* String url ="http://localhost:8081/aes?passphrase=password12345678&iv=144627479e44c3d5c69babb3ccca7aba&salt=2ecb098f10a9a630bcf62a8e03e58cb0&ciphertext=bCd4P695m18ZlxakeTMrJw%3D%3D&iterationCount=1000&keySize=128";
+         try {
+        	 System.out.println(java.net.URLDecoder.decode(url, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			StringWriter sw = new StringWriter();	e.printStackTrace(new PrintWriter(sw));logger.error(sw);
+		}*/
+    	// AesUtil aesUtil = new AesUtil(keySize, iterationCount);
+         //String plaintext = aesUtil.decrypt(salt, iv, passphrase, ciphertext);
+        // System.out.println("plaintext  "+plaintext);
+         System.out.println("plaintext  "+random(16));
+         
+	}
+    
+    public AesUtil(int keySize, int iterationCount) {
+        this.keySize = keySize;
+        this.iterationCount = iterationCount;
+        try {
+            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        }
+        catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            throw fail(e);
+        }
+    }
+    
+    public String encrypt(String salt, String iv, String passphrase, String plaintext) {
+        try {
+            SecretKey key = generateKey(salt, passphrase);
+            byte[] encrypted = doFinal(Cipher.ENCRYPT_MODE, key, iv, plaintext.getBytes("UTF-8"));
+            return base64(encrypted);
+        }
+        catch (UnsupportedEncodingException e) {
+            throw fail(e);
+        }
+    }
+    
+    public String decrypt(String salt, String iv, String passphrase, String ciphertext) {
+        try {
+            SecretKey key = generateKey(salt, passphrase);
+            byte[] decrypted = doFinal(Cipher.DECRYPT_MODE, key, iv, base64(ciphertext));
+            return new String(decrypted, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            throw fail(e);
+        }
+    }
+    
+    private byte[] doFinal(int encryptMode, SecretKey key, String iv, byte[] bytes) {
+        try {
+            cipher.init(encryptMode, key, new IvParameterSpec(hex(iv)));
+            return cipher.doFinal(bytes);
+        }
+        catch (InvalidKeyException
+                | InvalidAlgorithmParameterException
+                | IllegalBlockSizeException
+                | BadPaddingException e) {
+            throw fail(e);
+        }
+    }
+    
+    private SecretKey generateKey(String salt, String passphrase) {
+        try {
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            KeySpec spec = new PBEKeySpec(passphrase.toCharArray(), hex(salt), iterationCount, keySize);
+            SecretKey key = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+            return key;
+        }
+        catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw fail(e);
+        }
+    }
+    
+    public static String random(int length) {
+        byte[] salt = new byte[length];
+        new SecureRandom().nextBytes(salt);
+        return hex(salt);
+    }
+    public static String base64(byte[] bytes) {
+        return org.apache.ws.commons.util.Base64.encode(bytes);
+    }
+    
+   /* public static String base64(byte[] bytes) {
+        return Base64.encodeBase64String(bytes);
+    }*/
+    
+    /*public static byte[] base64(String str) {
+        return Base64.decodeBase64(str);
+    }*/
+    
+    public static byte[] base64(String str) {
+        try {
+			return org.apache.ws.commons.util.Base64.decode(str);
+		} catch (DecodingException e) {
+			// TODO Auto-generated catch block
+			StringWriter sw = new StringWriter();	e.printStackTrace(new PrintWriter(sw));logger.error(sw);
+		}
+		return null;
+    }
+    
+    public static String hex(byte[] bytes) {
+        return Hex.encodeHex(bytes).toString();
+    }
+    
+  /*  public static String hex(byte[] bytes) {
+        return Hex.encodeHexString(bytes);
+    }*/
+    
+    public static byte[] hex(String str) {
+        try {
+            return Hex.decodeHex(str.toCharArray());
+        }
+        catch (DecoderException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+    
+    private IllegalStateException fail(Exception e) {
+        return new IllegalStateException(e);
+    }
+}
