@@ -1,0 +1,79 @@
+Servlet Filter code
+
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+@WebFilter(filterName = "AuthFilter", urlPatterns = { "*.xhtml" })
+public class AuthFilter implements Filter {
+
+	public AuthFilter() {
+	}
+
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+
+	}
+
+	@Override
+	public void doFilter(ServletRequest request, ServletResponse response,
+			FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse res = (HttpServletResponse) response;
+		HttpSession ses = req.getSession(false);
+		String reqURI = req.getRequestURI();
+		try {
+			if (reqURI.equals(request.getServletContext().getContextPath()
+					+ "/")
+					|| (ses != null && ses.getAttribute("username") != null)
+					|| reqURI.indexOf("/staticSite/") >= 0
+					|| reqURI.indexOf("/services/") >= 0
+					|| reqURI.contains("javax.faces.resource")) {
+				this.noCache(res);
+				chain.doFilter(request, response);
+			} else {
+				this.noCache(res);
+				System.out.println(req.getContextPath());
+				res.sendRedirect(req.getContextPath() + "/");
+			}
+		} catch (Throwable t) {
+			System.out.println("	#############	LookAuthFilter	#############	");
+			t.printStackTrace();
+		}
+	}
+
+	private boolean isAJAXRequest(HttpServletRequest request) {
+		boolean check = false;
+		String facesRequest = request.getHeader("Faces-Request");
+		if (facesRequest != null && facesRequest.equals("partial/ajax")) {
+			System.out
+					.println(" #################################    Ajax Call");
+			check = true;
+		}
+		return check;
+	}
+
+	@Override
+	public void destroy() {
+
+	}
+
+	private void noCache(HttpServletResponse res) {
+		res.setHeader("Cache-Control", "no-cache,no-store,must-revalidate"); // HTTP
+		res.setHeader("Pragma", "no-cache"); // HTTP 1.0
+		// res.setHeader("Content-Type", "text/html");
+		// res.setHeader("X-Frame-Options", "DENY");
+		// res.addHeader("X-Frame-Options", "DENY");
+		res.setDateHeader("Expires", 0);
+
+	}
+}
