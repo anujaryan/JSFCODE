@@ -23,3 +23,16 @@ getDynamicFormService().getList(AppWiseKhasraAddDetails.class,
 5	<property name="departmentName">	
             <formula>(SELECT md.DEPARTMENT_NAME FROM MD_DEPARTMENTS md where md.id = DEPARTMENT_ID)</formula>	
         </property>
+6.List<String> statusLst = Arrays.asList(Constants.APP_PENDING,
+Constants.APP_DRAFTED);
+query = getSession()
+.createQuery(
+"from TransactionDetail td where td.id=(select max(td1.id) from
+TransactionDetail td1,AppMap app where
+upper(td1.appStatus)=upper(app.appStatus) "
++ "and td1.appNo=app.appNo and td1.formMaster.id=(:form) and
+td1.submittedBy=(:user) and td1.appNo=td.appNo) and td.appStatus in
+(:status)")
+.setParameter("form", fm).setParameter("user", user.getLoginId())
+.setParameterList("status", statusLst);
+tempList = query.list();
